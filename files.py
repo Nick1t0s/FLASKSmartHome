@@ -1,0 +1,2 @@
+def createDIRTABLE(ip):
+    pass
