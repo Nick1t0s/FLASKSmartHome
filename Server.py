@@ -1,3 +1,5 @@
+
+
 def createJsonCommands(request):
     args = request.args.to_dict()
     devicesDFSorted = devicesDF[devicesDF["id"] == args["id"]]
@@ -17,29 +19,28 @@ import datetime
 import pandas as pd
 import logging
 import os
+import files
+import toolsRequest
+import security
+import controlDevices
 
 
 app=Flask("Server.py")
 # app.logger.disabled = True
 # log = logging.getLogger('werkzeug')
 # log.disabled = True
-logging.basicConfig(level=logging.DEBUG)
-devicesDF=pd.DataFrame({"id":[],
-                        "ip":[],
-                        "name":[],
-                        "commands":[],
-                        "cmDescription":[],
-                        "dvDescription":[],
-                        "lastConnection":[],
-                        "commandsToRun":[]})
-devicesCredentials=readDevices()
+logging.basicConfig(level=logging.DEBUG) #log.getLogFileName()
+devicesDF=controlDevices.getDF()
+devicesCredentials=files.readCredentials("credentials\\devices.txt")
+usersCredentials=files.readCredentials("credentials\\users.txt")
+rootsCredentials=files.readCredentials("credentials\\roots.txt")
 @app.route("/api/device/getCM/", methods=['GET'])
 def deviceRequest():
     r = {'is_claimed': 'True', 'rating': 3.5}
     r = json.dumps(r)
     args = request.args.to_dict()
-    if regDevice(request):
-        writeDeviceToDF(request)
+    if security.checkPassword(request):
+        controlDevices.writeDevice(devicesDF,request)
         answer=createJsonCommands(request)
     else:
         answer=json.dumps({"hello":"hello"})
@@ -51,23 +52,14 @@ def commandsPost():
     print(jsF)
     return "asd"
 
-@app.route("/api/device/writeData/",methods=["POST"])
+@app.route("/api/device/sendFile/",methods=["POST"])
 def writeData():
-    data=request.form.to_dict()
-    password=data.get("password","wrondPS")
-    ip=request.remote_addr
-    fileName=data.get("fileName")
-    if password==devicesCredentials.get(ip,"P"):
-        if data.get("command","Err")=="writeFile":
-            if fileName != "Err":
-                file = request.files['file']
-                file.save(os.path.join("gettedFiles",data.get("fileName")))
-            else:
-                logging.warning(f"Device by {ip} connected and tried to transfer the file, but the path was not specified")
-        elif data.get("command","Err")=="writeDB"
-    else:
-        logging.warning(f"Device by {ip} tried to connect and transfer file, but password is wrong")
+    toolsRequest.downloadFile(request,devicesCredentials)
     return "ok"
+
+@app.route("/api/device/getFile",methods=["POST"])
+def writeData():
+
 
 @app.route("/api/device/SQL",methods=["POST"])
 def SQL():

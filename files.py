@@ -3,12 +3,15 @@ import sql
 import logging
 import sys
 import inputLogging
-def createDIRTABLE(ip):
+def createDir(ip):
     if not os.path.exists("devices"): os.mkdir("devices")
     if not os.path.exists(f"devices\\{ip.replace(".","_")}"): os.mkdir(f"devices\\{ip.replace(".","_")}")
+def createDIRTABLE(ip):
+    createDir(ip)
     sql.createTable({"d1":"INTAGER","d2":"INTAGER"},ip)
 
 def readCredentials(file):
+    print(file)
     if os.path.exists(file):
         devicesCredentials={}
         with open(file) as file:
