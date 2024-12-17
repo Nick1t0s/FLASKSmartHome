@@ -17,7 +17,7 @@ def downloadFile(request,devicesCredentials):
         file = request.files['file']
         file.save(f"devices\\{ip.replace(".","_")}\\{fullPath}")
         log.logLoadFile("ok",request,fullPath)
-        return "ok"иыатпрпм
+        return "ok"
     else:
         log.logLoadFile("wrongPass",request,"")
         return "wrong"

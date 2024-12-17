@@ -1,4 +1,4 @@
-import sql
+import sqlite3
 
 
 def createJsonCommands(request):
@@ -7,10 +7,11 @@ def createJsonCommands(request):
     if devicesDFSorted.shape[0]==0:
         commandsToExecute = ""
     else:
-        commandsToExecute = devicesDFSorted["commandsToRun"][0]
-    x={"commands":commandsToExecute.split()}
+        commandsToExecute = devicesDFSorted["commandsToRun"].to_list()
+        print(commandsToExecute)
+    x={"commands":commandsToExecute}
     xJS=json.dumps(x)
-    print(devicesDF)
+    # print(devicesDF)
     return xJS
 
 def createDeviceDir(request):
@@ -46,12 +47,13 @@ def deviceRequest():  # Функция ответа на запрос получ
         answer=createJsonCommands(request)
     else:
         answer=json.dumps({"hello":"hello"})
+    print(devicesDF)
     return answer
 
 @app.route("/api/device/doneCommand/", methods=['GET','POST'])
 def commandsPost():  # Функция регистрации выполнения команды
     jsF=request.form.to_dict()
-    print(jsF)
+    # print(jsF)
     return "asd"
 
 @app.route("/api/device/sendFile/",methods=["POST"])
@@ -66,7 +68,29 @@ def getData():  # Отправка файла
 def SQL():  # Выполнение SQL запроса
     return toolsRequest.useSQL(request,devicesCredentials)
 
-@app.route("/api/user/SQL/",methods=["POST"])
+@app.route("/api/user/getDevices/",methods=["POST"])
+def getDevices():
+    if security.checkPassword(request,usersCredentials):
+        # controlDevices.writeDevice(devicesDF,request)
+        # answer=createJsonCommands(request)
+        # print(devicesDF.to_dict())
+        answer = devicesDF.to_dict()
+        for i in answer:
+            answer[i] = list(answer[i].values())
+        # print(answer)
+    else:
+        answer = {"hello":"hello"}
+    return json.dumps(answer)
+
+@app.route("/api/user/writeCMD/", methods=["POST"])
+def writeCMD():
+    if security.checkPassword(request, usersCredentials):
+        answer = controlDevices.writeCommand(devicesDF, request)
+    else:
+        answer = {"hello":"hello"}
+    return json.dumps(answer)
+
+@app.route("/api/user/SQL/", methods=["POST"])
 def getCMDS():
     return toolsRequest.getCOMMANDS(request,usersCredentials,devicesDF)
 
