@@ -1,5 +1,6 @@
 import pandas as pd
 import dt
+import json
 def getDF():
     devicesDF=pd.DataFrame({"id": [],
                               "ip": [],
@@ -12,10 +13,16 @@ def getDF():
     return devicesDF
 
 def writeDevice(devicesDF,request):
-    data=request.form.to_dict()
+    data=json.loads(request.json)
+    print(data)
     devicesDFSorted=devicesDF[devicesDF["id"]==data["id"]]
     commandsToExecute=devicesDFSorted["commandsToRun"]
-    devicesDF.loc[devicesDF.shape[0]] = [data["id"], request.remote_addr, data["name"], data["commands"],
-                                         data["cmDescription"],data["dvDescription"],dt.getStrTimeNow(False),
-                                         ",".join(commandsToExecute)]
+    listForWrite=[data["id"], request.remote_addr, data["name"],
+                  ",".join(data["commands"]) if type(data["commands"]) == list else data["commands"],
+                  ",".join(data["cmDescription"]) if type(data["cmDescription"]) == list else data["cmDescription"],
+                  ""
+                  dt.getStrTimeNow(True),
+                  "sdf","sdf","sdfgf"]
+    print(listForWrite)
+    devicesDF.loc[devicesDF.shape[0]] = listForWrite
     return devicesDF
