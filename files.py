@@ -18,7 +18,7 @@ def readCredentials(file):
             counter=0
             for line in file:
                 if line.count(" ")==1:
-                    ip,password=line.split(" ")
+                    ip,password=line.strip("\n").split(" ")
                     devicesCredentials[ip]=password
                 else:
                     if inputLogging.getYn(f"Y/n"):

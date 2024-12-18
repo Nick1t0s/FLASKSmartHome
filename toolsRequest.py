@@ -7,32 +7,27 @@ import sql
 from flask import send_file
 import json
 
-def downloadFile(request,devicesCredentials):
-    # files.createDir(data["id"])  # Создаем директорию, если ее нет
-    # extension = data.get("extension","")
-    # fullPath = data.get("fileName","noName")+f" by {dt.getStrTimeNow(True)}.{extension}"
-    # file = request.files['file']
-    # file.save(f"devices\\{id}\\{fullPath}")
-    # log.logLoadFile("ok",request,fullPath)
+def downloadFile(request):
+    data = request.form.to_dict()
+    files.createDir(data["id"])  # Создаем директорию, если ее нет
+    extension = data.get("extension","txt")
+    fullPath = data.get("filename","noName")+f" by {dt.getStrTimeNow(True).replace(":"," ")}.{extension}"
+    file = request.files['file']
+    print(f"devices\\{data["id"]}\\{fullPath}")
+    file.save(f"devices\\{data["id"]}\\{fullPath}")
+    log.logLoadFile("ok",request,fullPath)
     return {"hello":"ok"}
 
-def getFile(request,devicesCredentials):
-    data = json.loads(request.json)
-    if security.checkPassword(request, devicesCredentials):
-        files.createDir(request.remote_addr)
-        ip = request.remote_addr
-        file=data.get("fileName")
-        if os.path.exists(f"devices\\{ip.replace(".","_")}\\{file}"):
-            log.logGetFile("ok",request,file)
-            return send_file(f"devices\\{ip.replace(".","_")}\\{file}")
-        else:
-            log.logGetFile("noFile", request, file)
-            return "noFile"
+def getFile(dic):
+    file=dic["filename"]
+    if os.path.exists(f"devices\\{dic["id"]}\\{file}"):
+        log.logGetFile("ok",dic,file)
+        print("OOOOOOOOOOOOOO")
+        return send_file(f"devices\\{dic["id"]}\\{file}")
     else:
-        file = data.get("fileName","")
-        log.logGetFile("wrongPass",request,file)
-        return "wrong"
-
+        log.logGetFile("noFile", dic, file)
+        print("KKKKKKKKKKKKKKKKK")
+        return {"hello":"nofile"}
 def useSQL(request,devicesCredentials):
     data = json.loads(request.json)
     print(data)

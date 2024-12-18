@@ -42,12 +42,13 @@ usersCredentials=files.readCredentials("credentials\\users.txt")
 rootsCredentials=files.readCredentials("credentials\\roots.txt")
 @app.route("/api/device/getCM/", methods=['POST'])
 def deviceRequest():  # Функция ответа на запрос получения команд
-    if security.checkPassword(request,devicesCredentials):
-        controlDevices.writeDevice(devicesDF,request)
+    print(json.loads(request.json))
+    if security.checkPassword(json.loads(request.json),devicesCredentials):
+        controlDevices.writeDevice(devicesDF,json.loads(request.json))
         answer=createJsonCommands(request)
     else:
         answer=json.dumps({"hello":"hello"})
-    print(devicesDF)
+    # print(devicesDF)
     return answer
 
 @app.route("/api/device/doneCommand/", methods=['GET','POST'])
@@ -58,15 +59,19 @@ def commandsPost():  # Функция регистрации выполнени�
 
 @app.route("/api/device/sendFile/",methods=["POST"])
 def writeData():  # Прием файла
-    # if security.checkPassword(request, devicesCredentials):
-    #     return json.dumps({"h":"h"})
-    # else:
-    print(request.form)
-    return json.dumps({"hello":"hello"})
+    if security.checkPassword(request.form.to_dict(), devicesCredentials):
+        return toolsRequest.downloadFile(request)
+    else:
+        return json.dumps({"hello":"hello"})
 
 @app.route("/api/device/getFile/",methods=["POST"])
 def getData():  # Отправка файла
-    return toolsRequest.getFile(request,devicesCredentials)
+    print(json.loads(request.json))
+    print(devicesCredentials)
+    if security.checkPassword(json.loads(request.json), devicesCredentials):
+        return toolsRequest.getFile(json.loads(request.json))
+    else:
+        return {"hello":"hello"}
 
 @app.route("/api/device/SQL/",methods=["POST"])
 def SQL():  # Выполнение SQL запроса
@@ -74,22 +79,18 @@ def SQL():  # Выполнение SQL запроса
 
 @app.route("/api/user/getDevices/",methods=["POST"])
 def getDevices():
-    if security.checkPassword(request,usersCredentials):
-        # controlDevices.writeDevice(devicesDF,request)
-        # answer=createJsonCommands(request)
-        # print(devicesDF.to_dict())
+    if security.checkPassword(json.loads(request.json),usersCredentials):
         answer = devicesDF.to_dict()
         for i in answer:
             answer[i] = list(answer[i].values())
-        # print(answer)
     else:
         answer = {"hello":"hello"}
     return json.dumps(answer)
 
 @app.route("/api/user/writeCMD/", methods=["POST"])
 def writeCMD():
-    if security.checkPassword(request, usersCredentials):
-        answer = controlDevices.writeCommand(devicesDF, request)
+    if security.checkPassword(json.loads(request.json),usersCredentials):
+        answer = controlDevices.writeCommand(devicesDF, json.loads(request.json))
     else:
         answer = {"hello":"hello"}
     return json.dumps(answer)

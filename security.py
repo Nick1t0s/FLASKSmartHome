@@ -1,6 +1,4 @@
 import json
-def checkPassword(request,credentials):
-    data = json.loads(request.json)
-    ip = request.remote_addr
-    if data.get("password","1") == credentials.get(ip,"2"): return True
+def checkPassword(dic,credentials):
+    if dic.get("password","1") == credentials.get(dic.get("id"),"2"): return True
     return False
