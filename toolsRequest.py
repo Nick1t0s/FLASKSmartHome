@@ -8,19 +8,13 @@ from flask import send_file
 import json
 
 def downloadFile(request,devicesCredentials):
-    data = json.loads(request.json)
-    if security.checkPassword(request,devicesCredentials):
-        files.createDir(request.remote_addr)
-        ip = request.remote_addr
-        extension = data.get("extension","")
-        fullPath = data.get("fileName","noName")+f" by {dt.getStrTimeNow(True)}.{extension}"
-        file = request.files['file']
-        file.save(f"devices\\{ip.replace(".","_")}\\{fullPath}")
-        log.logLoadFile("ok",request,fullPath)
-        return "ok"
-    else:
-        log.logLoadFile("wrongPass",request,"")
-        return "wrong"
+    # files.createDir(data["id"])  # Создаем директорию, если ее нет
+    # extension = data.get("extension","")
+    # fullPath = data.get("fileName","noName")+f" by {dt.getStrTimeNow(True)}.{extension}"
+    # file = request.files['file']
+    # file.save(f"devices\\{id}\\{fullPath}")
+    # log.logLoadFile("ok",request,fullPath)
+    return {"hello":"ok"}
 
 def getFile(request,devicesCredentials):
     data = json.loads(request.json)

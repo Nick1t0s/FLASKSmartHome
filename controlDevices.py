@@ -45,3 +45,4 @@ def writeCommand(devicesDF,request):
         return {"hello": "ok"}
     else:
         return {"hello":"noID"}
+

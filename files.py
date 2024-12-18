@@ -32,5 +32,3 @@ def readCredentials(file):
     else:
         logging.error(f"No file settings, path: {file}")
         sys.exit(1)
-
-sql.deleteTable("192.168.1.33")

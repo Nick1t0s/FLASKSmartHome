@@ -58,7 +58,11 @@ def commandsPost():  # Функция регистрации выполнени�
 
 @app.route("/api/device/sendFile/",methods=["POST"])
 def writeData():  # Прием файла
-    return toolsRequest.downloadFile(request,devicesCredentials)
+    # if security.checkPassword(request, devicesCredentials):
+    #     return json.dumps({"h":"h"})
+    # else:
+    print(request.form)
+    return json.dumps({"hello":"hello"})
 
 @app.route("/api/device/getFile/",methods=["POST"])
 def getData():  # Отправка файла
