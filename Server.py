@@ -40,6 +40,8 @@ devicesDF=controlDevices.getDF()
 devicesCredentials=files.readCredentials("credentials\\devices.txt")
 usersCredentials=files.readCredentials("credentials\\users.txt")
 rootsCredentials=files.readCredentials("credentials\\roots.txt")
+
+# --------------- Устройства --------------
 @app.route("/api/device/getCM/", methods=['POST'])
 def deviceRequest():  # Функция ответа на запрос получения команд
     print(json.loads(request.json))
@@ -51,11 +53,12 @@ def deviceRequest():  # Функция ответа на запрос получ
     # print(devicesDF)
     return answer
 
-@app.route("/api/device/doneCommand/", methods=['GET','POST'])
-def commandsPost():  # Функция регистрации выполнения команды
-    jsF=request.form.to_dict()
-    # print(jsF)
-    return "asd"
+# @app.route("/api/device/doneCommand/", methods=['GET','POST'])
+# def commandsPost():  # Функция регистрации выполнения команды
+#     jsF=request.form.to_dict()
+#     # print(jsF)
+#     return "asd"
+
 
 @app.route("/api/device/sendFile/",methods=["POST"])
 def writeData():  # Прием файла
@@ -73,12 +76,15 @@ def getData():  # Отправка файла
     else:
         return {"hello":"hello"}
 
-@app.route("/api/device/SQL/",methods=["POST"])
-def SQL():  # Выполнение SQL запроса
-    return toolsRequest.useSQL(request,devicesCredentials)
+@app.route("/api/device/getFile/", )
 
+# @app.route("/api/device/SQL/",methods=["POST"])
+# def SQL():  # Выполнение SQL запроса
+#     return toolsRequest.useSQL(request,devicesCredentials)
+
+# --------------- Пользователи --------------
 @app.route("/api/user/getDevices/",methods=["POST"])
-def getDevices():
+def getDevices():  # Получить список устройств
     if security.checkPassword(json.loads(request.json),usersCredentials):
         answer = devicesDF.to_dict()
         for i in answer:
@@ -88,7 +94,7 @@ def getDevices():
     return json.dumps(answer)
 
 @app.route("/api/user/writeCMD/", methods=["POST"])
-def writeCMD():
+def writeCMD():  # Дать команду устройству
     if security.checkPassword(json.loads(request.json),usersCredentials):
         answer = controlDevices.writeCommand(devicesDF, json.loads(request.json))
     else:
